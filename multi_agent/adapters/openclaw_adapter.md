@@ -1,6 +1,6 @@
 # OpenClaw Adapter
 
-OpenClaw 是总调度入口。`.multi-agent` 不破坏已有 `.openclaw/`，只通过配置引用它。
+OpenClaw 是总调度入口。`multi_agent/` 不破坏已有 `.openclaw/`，只通过配置引用它。
 
 ## 角色
 

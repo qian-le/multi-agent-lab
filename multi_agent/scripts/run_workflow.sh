@@ -225,7 +225,7 @@ reason: classified from explicit --type and goal keywords
 EOF
 log "stage router: $ROUTER_FILE"
 
-KEY_FILES="$(find .multi-agent -maxdepth 2 -type f | sort | head -n 80)"
+KEY_FILES="$(find multi_agent -maxdepth 2 -type f | sort | head -n 80)"
 OPENCLAW_STATE="missing"
 if [[ -d ".openclaw" ]]; then
   OPENCLAW_STATE="present at .openclaw"
@@ -238,17 +238,17 @@ cat > "$SCOUT_FILE" <<EOF
 - 已检查路径:
   - .
   - .openclaw
-  - .multi-agent
+  - multi_agent
 - 发现的关键文件:
 $(printf '%s\n' "$KEY_FILES" | sed 's/^/  - /')
 - 当前状态:
   - OpenClaw: $OPENCLAW_STATE
-  - Multi-Agent root: .multi-agent
+  - Multi-Agent root: multi_agent
   - Git repository: $(git rev-parse --is-inside-work-tree 2>/dev/null || printf 'no')
 - 疑似问题:
   - none from read-only scout
 - 交给 Analyst 的信息:
-  - Use .multi-agent as the bounded orchestration layer.
+  - Use multi_agent as the bounded orchestration layer.
   - Do not modify .openclaw unless a later plan explicitly scopes it.
 EOF
 AGENTS_USED="$AGENTS_USED,scout"
@@ -294,7 +294,7 @@ elif [[ "$TASK_TYPE" == "architecture" ]]; then
 - multi_agent/scripts/*.py
 - multi_agent/README.md"
   PLAN_COMMANDS="- execute only after Hermes approve or Analyst revision
-- keep changes within .multi-agent"
+- keep changes within multi_agent"
   PLAN_VERIFY="- run smoke test
 - inspect logs and memory output"
   HERMES_REQUIRED="yes"
@@ -378,7 +378,7 @@ if [[ "$TASK_TYPE" == "architecture" || "$TASK_TYPE" == "risky" ]]; then
 
 - revision_status: incorporated
 - changes:
-  - tightened execution scope to .multi-agent only
+  - tightened execution scope to multi_agent only
   - kept verification explicit
   - kept deletion and system-path changes out of scope
 - analyst_revision: true

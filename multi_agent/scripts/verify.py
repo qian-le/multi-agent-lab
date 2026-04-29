@@ -41,7 +41,7 @@ def parse_create_workspace_goal(goal: str) -> tuple[pathlib.Path | None, str | N
     if "/" in filename:
         return None, None, "filename must not contain path separators"
 
-    return pathlib.Path(".multi-agent") / "workspace" / filename, expected, None
+    return pathlib.Path("multi_agent") / "workspace" / filename, expected, None
 
 
 def main() -> int:

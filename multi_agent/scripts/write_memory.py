@@ -46,7 +46,7 @@ def main() -> int:
     parser.add_argument("--verifier-result", default="")
     parser.add_argument("--next-steps", default="")
     parser.add_argument("--lesson", default="")
-    parser.add_argument("--root", default=".multi-agent")
+    parser.add_argument("--root", default="multi_agent")
     args = parser.parse_args()
 
     root = pathlib.Path(args.root)
@@ -81,7 +81,7 @@ def main() -> int:
 - project: openclaw-multi-agent-os
 - state: active
 - openclaw_config: .openclaw
-- multi_agent_root: .multi-agent
+- multi_agent_root: multi_agent
 - last_task: {task_id}
 - last_task_type: {task_type}
 - last_summary: {summary}
