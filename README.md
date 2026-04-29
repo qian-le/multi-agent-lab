@@ -124,19 +124,20 @@ Most agent demos show a single LLM call. This skeleton shows how multiple agents
 
 This is a **workflow skeleton**, not a deployed product. It is useful for studying agent role separation, testing safety boundaries, and running local automation with review steps.
 
-## MiMo Orbit Relevance
+## Model Integration Roadmap
 
-This project is designed to integrate **MiMo-V2.5-Pro** as the long-context reasoning engine for several key agent roles. The planned integration targets are:
+## Model Integration Roadmap
 
-- **Analyst planning** — multi-step plans with tool call reasoning over long task histories
-- **Hermes review** — fallback reasoning review for ambiguous or high-stakes tasks
-- **Verifier reasoning** — semantic output verification beyond diff and exit-code checks
-- **Memory summarization** — condensing accumulated session records into reusable lessons
-- **Workflow optimization** — learning from past Guard decisions to route more efficiently
+The adapter layer in this skeleton is designed to make backend upgrades straightforward. The natural next step is replacing the rule-based Router, heuristic Guard, and diff-based Verifier with a more capable reasoning model.
 
-**Current state:** The skeleton uses rule-based routing and heuristic Guard checks. MiMo-V2.5-Pro integration is a **planned development target**, not a current implementation. The adapter layer is designed to accommodate this integration when the API is available.
+**MiMo-V2.5-Pro** is a strong candidate given its long-context reasoning capability for planning and review tasks. Planned integration targets:
 
-See [docs/mimo-orbit.md](docs/mimo-orbit.md) for the full integration plan.
+- **Analyst** — multi-step plans with long task history context
+- **Verifier** — semantic output verification beyond diff and exit codes
+- **Hermes-style review** — contextual risk reasoning instead of pattern deny-lists
+- **Memory** — summarization of accumulated session records
+
+See [docs/model-integration-roadmap.md](docs/model-integration-roadmap.md) for the full roadmap.
 
 ## Roadmap
 

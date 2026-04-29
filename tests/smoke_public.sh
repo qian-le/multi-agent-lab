@@ -74,7 +74,7 @@ for f in \
   docs/architecture.md \
   docs/workflows.md \
   docs/security.md \
-  docs/mimo-orbit.md; do
+  docs/model-integration-roadmap.md; do
   if [[ -f "$f" ]]; then
     echo "  OK: $f"
   else
@@ -174,7 +174,7 @@ fi
 # Check MiMo doc clearly marks integration as planned
 echo
 echo "[11] Checking MiMo doc status..."
-if grep -qi "not.*integrat\|planned\|target\|future\|aspirational" docs/mimo-orbit.md 2>/dev/null; then
+if grep -qi "not.*integrat\|planned\|target\|future\|aspirational" docs/model-integration-roadmap.md 2>/dev/null; then
   echo "  OK: MiMo integration is clearly marked as planned"
 else
   echo "  WARNING: MiMo integration status unclear in docs/mimo-orbit.md"
