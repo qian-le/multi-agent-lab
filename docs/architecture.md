@@ -103,7 +103,7 @@ The memory layer is **read by Scout** at startup so future tasks have context. I
 The executor may only write to:
 
 ```
-.multi-agent/workspace/
+multi_agent/workspace/
 ```
 
 Files outside this boundary require Guard approval with elevated justification. The shell adapter checks all write paths before executing.

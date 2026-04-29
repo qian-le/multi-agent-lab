@@ -8,7 +8,7 @@ echo
 
 # Check root files
 echo "[1] Checking root files..."
-for f in README.md LICENSE CONTRIBUTING.md ROADMAP.md SECURITY.md .gitignore; do
+for f in README.md LICENSE .gitignore; do
   if [[ -f "$f" ]]; then
     echo "  OK: $f"
   else
@@ -19,31 +19,35 @@ done
 
 # Check core skeleton files
 echo
-echo "[2] Checking .multi-agent core files..."
+echo "[2] Checking multi_agent/ core files..."
 for f in \
-  .multi-agent/README.md \
-  .multi-agent/config.yaml \
-  .multi-agent/agents/main.md \
-  .multi-agent/agents/router.md \
-  .multi-agent/agents/scout.md \
-  .multi-agent/agents/analyst.md \
-  .multi-agent/agents/guard.md \
-  .multi-agent/agents/executor.md \
-  .multi-agent/agents/verifier.md \
-  .multi-agent/agents/memory_manager.md \
-  .multi-agent/workflows/info.yaml \
-  .multi-agent/workflows/modify.yaml \
-  .multi-agent/workflows/analysis.yaml \
-  .multi-agent/workflows/debug.yaml \
-  .multi-agent/workflows/architecture.yaml \
-  .multi-agent/workflows/risky.yaml \
-  .multi-agent/scripts/run_workflow.sh \
-  .multi-agent/scripts/verify.py \
-  .multi-agent/scripts/guard_check.py \
-  .multi-agent/adapters/openclaw_adapter.md \
-  .multi-agent/adapters/hermes_adapter.md \
-  .multi-agent/adapters/claude_code_adapter.md \
-  .multi-agent/memory/templates/daily.md; do
+  multi_agent/README.md \
+  multi_agent/config.yaml \
+  multi_agent/agents/main.md \
+  multi_agent/agents/router.md \
+  multi_agent/agents/scout.md \
+  multi_agent/agents/analyst.md \
+  multi_agent/agents/guard.md \
+  multi_agent/agents/executor.md \
+  multi_agent/agents/verifier.md \
+  multi_agent/agents/memory_manager.md \
+  multi_agent/workflows/info.yaml \
+  multi_agent/workflows/modify.yaml \
+  multi_agent/workflows/analysis.yaml \
+  multi_agent/workflows/debug.yaml \
+  multi_agent/workflows/architecture.yaml \
+  multi_agent/workflows/risky.yaml \
+  multi_agent/scripts/run_workflow.sh \
+  multi_agent/scripts/verify.py \
+  multi_agent/scripts/guard_check.py \
+  multi_agent/adapters/openclaw_adapter.md \
+  multi_agent/adapters/hermes_adapter.md \
+  multi_agent/adapters/claude_code_adapter.md \
+  multi_agent/adapters/shell_adapter.md \
+  multi_agent/memory/templates/daily.md \
+  multi_agent/memory/templates/decision.md \
+  multi_agent/memory/templates/failure.md \
+  multi_agent/memory/templates/lesson.md; do
   if [[ -f "$f" ]]; then
     echo "  OK: $f"
   else
@@ -97,7 +101,7 @@ fi
 echo
 echo "[6] Checking bash script syntax..."
 shopt -s nullglob
-for f in .multi-agent/scripts/*.sh tests/*.sh; do
+for f in multi_agent/scripts/*.sh tests/*.sh; do
   if bash -n "$f" 2>/dev/null; then
     echo "  OK: $f"
   else
@@ -111,7 +115,7 @@ shopt -u nullglob
 echo
 echo "[7] Checking Python script syntax..."
 shopt -s nullglob
-for f in .multi-agent/scripts/*.py tests/*.py; do
+for f in multi_agent/scripts/*.py tests/*.py; do
   if python3 -m py_compile "$f" 2>/dev/null; then
     echo "  OK: $f"
   else
@@ -125,10 +129,10 @@ shopt -u nullglob
 echo
 echo "[8] Checking forbidden directories not tracked by git..."
 for dir in \
-  .multi-agent/logs \
-  .multi-agent/memory/daily \
-  .multi-agent/memory/failures \
-  .multi-agent/memory/decisions; do
+  multi_agent/logs \
+  multi_agent/memory/daily \
+  multi_agent/memory/failures \
+  multi_agent/memory/decisions; do
   tracked=$(git ls-files --error-unmatch "$dir" 2>/dev/null && echo YES || echo NO)
   if [[ "$tracked" == "YES" ]]; then
     echo "  TRACKED (should not be): $dir"
@@ -142,11 +146,11 @@ done
 echo
 echo "[9] Checking .gitignore coverage..."
 required_patterns=(
-  ".multi-agent/logs/"
-  ".multi-agent/memory/daily/"
-  ".multi-agent/memory/failures/"
-  ".multi-agent/memory/decisions/"
-  ".multi-agent/workspace/"
+  "logs/"
+  "memory/daily/"
+  "memory/failures/"
+  "memory/decisions/"
+  "workspace/"
   ".env"
   ".ssh/"
   ".openclaw/"
@@ -163,7 +167,6 @@ done
 # Check README has no obviously fake/inflated claims
 echo
 echo "[10] Checking README honesty..."
-# Allow "not a production system" (honest disclaimer) but flag inflated claims
 if grep -qi "fully functional\|production-ready\|fully integrated\|complete system" README.md 2>/dev/null; then
   echo "  WARNING: README may contain inflated claims"
   exit 1
@@ -171,14 +174,30 @@ else
   echo "  OK: README is appropriately modest"
 fi
 
-# Check MiMo doc clearly marks integration as planned
+# Check model integration doc status
 echo
-echo "[11] Checking MiMo doc status..."
+echo "[11] Checking model integration doc status..."
 if grep -qi "not.*integrat\|planned\|target\|future\|aspirational" docs/model-integration-roadmap.md 2>/dev/null; then
-  echo "  OK: MiMo integration is clearly marked as planned"
+  echo "  OK: model integration is clearly marked as planned"
 else
-  echo "  WARNING: MiMo integration status unclear in docs/mimo-orbit.md"
+  echo "  WARNING: model integration status unclear"
   exit 1
+fi
+
+# Check no real API keys / tokens / secrets are present
+echo
+echo "[12] Scanning for leaked secrets..."
+LEAKED=$(grep -rEl \
+  "sk-[a-zA-Z0-9]{20,}|AIza[a-zA-Z0-9_-]{35,}|ghp_[a-zA-Z0-9]{36,}" \
+  --include="*.md" --include="*.sh" --include="*.py" \
+  --include="*.yaml" --include="*.yml" \
+  . 2>/dev/null | grep -v ".git/" || true)
+if [[ -n "$LEAKED" ]]; then
+  echo "  LEAKED SECRETS FOUND:"
+  echo "$LEAKED"
+  exit 1
+else
+  echo "  OK: no obvious API keys/tokens detected"
 fi
 
 echo

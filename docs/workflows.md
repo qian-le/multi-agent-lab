@@ -38,7 +38,7 @@ Executor never runs. Analyst produces a plan, Hermes reviews it.
 
 ## modify
 
-**Trigger:** Task creates or updates files inside `.multi-agent/workspace/`.
+**Trigger:** Task creates or updates files inside `multi_agent/workspace/`.
 
 **Pipeline:**
 ```
@@ -90,7 +90,7 @@ No executor. No side effects. A pure review pipeline.
 
 ## risky
 
-**Trigger:** Task touches system paths, uses sudo, or modifies outside `.multi-agent/workspace/`.
+**Trigger:** Task touches system paths, uses sudo, or modifies outside `multi_agent/workspace/`.
 
 **Pipeline:**
 ```

@@ -17,9 +17,9 @@ This example demonstrates an `architecture` workflow — a dry-run review of the
 ### 2. Scout.inspect()
 
 **Actions:**
-- Reads all agent definition files in `.multi-agent/agents/`
+- Reads all agent definition files in `multi_agent/agents/`
 - Reads `docs/architecture.md` for system overview
-- Reads `.multi-agent/memory/lessons/` for past architecture decisions
+- Reads `multi_agent/memory/lessons/` for past architecture decisions
 
 **Findings:**
 ```

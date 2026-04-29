@@ -1,0 +1,17 @@
+name: debug
+description: Bug investigation and repair workflow.
+stages:
+  - main
+  - router
+  - scout
+  - analyst
+  - guard
+  - executor
+  - verifier
+  - memory
+execution:
+  writes_project_files: true
+  requires_guard: true
+  requires_verifier: true
+  requires_hermes: false
+

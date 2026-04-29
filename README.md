@@ -2,163 +2,136 @@
 
 [![Public Smoke Test](https://github.com/qian-le/multi-agent-lab/actions/workflows/public-smoke.yml/badge.svg)](https://github.com/qian-le/multi-agent-lab/actions/workflows/public-smoke.yml)
 
-A local multi-agent workflow skeleton built around OpenClaw, Hermes, and Claude Code.
+A local multi-agent workflow skeleton demonstrating how to route tasks through specialized agents — Scout, Analyst, Hermes Reviewer, Guard, Executor, and Verifier — with a mandatory safety gate before any execution.
 
-## Project Scope
+This is a **learning and experimentation skeleton**, not a production system. It runs entirely on a single machine and is designed to teach agent role separation, safety-first execution, and memory management.
 
-This repository contains a **workflow orchestration framework** for multi-agent collaboration on a single machine. The system routes tasks through specialized agents — Router, Scout, Analyst, Hermes Reviewer, Guard, Executor, Verifier, and Memory Manager — to plan, review, and execute work safely within a sandboxed workspace.
-
-It is designed as a local development and experimentation environment, not a hosted or production system.
-
-## Core Features
-
-- **Router** — classifies incoming goals into workflow types
-- **Scout** — read-only inspection of workspace and memory
-- **Analyst** — plans approach and sub-steps
-- **Hermes Reviewer** — fallback review for complex or ambiguous tasks
-- **Guard** — mandatory safety gate before any execution
-- **Executor** — runs actions via shell, Python, or Claude Code
-- **Verifier** — checks executor output matches intent
-- **Memory Manager** — reads/writes structured memory templates
-- **Safe workspace boundary** — all writes stay under `.multi-agent/workspace/`
-
-## System Architecture
-
-```mermaid
-flowchart TD
-    U[User Goal] --> M[Main Coordinator]
-    M --> R[Router<br/>classify task type]
-    R --> S[Scout<br/>read-only inspection]
-    S --> A[Analyst<br/>planning]
-    A --> H[Hermes Reviewer<br/>complex tasks only]
-    H --> G[Guard<br/>safety gate]
-    A --> G
-    G -->|allow| E[Executor<br/>shell / python / claude_code]
-    G -->|deny| STOP[Pipeline Stopped]
-    E --> V[Verifier<br/>check result]
-    V -->|pass| MEM[Memory Manager<br/>record to templates]
-    V -->|fail| FAIL[Reported as Failure]
-```
-
-Text overview:
+## Project Structure
 
 ```
-User Goal
-  └─> Main Coordinator
-       └─> Router (classify task type)
-            ├─> Scout (inspect)
-            ├─> Analyst (plan)
-            ├─> Hermes Reviewer (complex tasks)
-            ├─> Guard (safety gate)
-            ├─> Executor (run) [only if Guard approves]
-            ├─> Verifier (check result)
-            └─> Memory Manager (record)
+multi_agent_lab/
+├── multi_agent/                 # Core skeleton code
+│   ├── agents/                # Agent role definitions
+│   ├── adapters/              # Backend adapter layer
+│   ├── workflows/             # Workflow type definitions
+│   ├── scripts/               # Shell/Python runner scripts
+│   ├── memory/templates/       # Structured memory templates
+│   └── config.yaml            # Workflow routing configuration
+├── docs/                      # Architecture, workflow, and integration docs
+├── examples/                  # Sanitized example runs (no real logs)
+├── tests/                    # Public smoke test
+├── templates/                # Example config templates
+│   └── .multi-agent/          # Example local config (no real secrets)
+├── .github/workflows/
+└── README.md
 ```
-
-## Supported Workflows
-
-| Workflow | Trigger | Stops at |
-|---|---|---|
-| `info` | file inspection, search, read | never executes |
-| `analysis` | evaluation, comparison, planning | never executes |
-| `modify` | create/update files in workspace | Guard or Verifier |
-| `debug` | diagnose failures | Guard blocks risky ops |
-| `architecture` | design review, dry-run | always a plan only |
-| `risky` | sudo, system paths, rm -rf | Guard blocks by default |
 
 ## Quick Start
 
 ```bash
-# Detect available runtimes
-bash .multi-agent/scripts/detect_tools.sh
-
-# Dry-run an info workflow
-bash .multi-agent/scripts/run_workflow.sh --type info --goal "list all agent files"
-
-# Dry-run an architecture review
-bash .multi-agent/scripts/run_workflow.sh --type architecture --goal "review current agent roles"
-
-# Run the public smoke test
+# Check that all scripts have valid syntax
 bash tests/smoke_public.sh
+
+# Detect available backends
+bash multi_agent/scripts/detect_tools.sh
+
+# Dry-run an info workflow (read-only, never executes)
+bash multi_agent/scripts/run_workflow.sh --type info --goal "list all agent files"
+
+# Dry-run a modify workflow (stops at Guard)
+bash multi_agent/scripts/run_workflow.sh --type modify --goal "create a hello world file"
 ```
 
-## Repository Layout
+## Core Agent Roles
 
-```
-multi-agent-lab/
-├── .multi-agent/          # Core skeleton
-│   ├── README.md         # Skeleton overview
-│   ├── config.yaml        # Workflow routing config
-│   ├── agents/           # Agent role definitions
-│   ├── adapters/         # Backend adapters (shell, openclaw, hermes, claude_code)
-│   ├── workflows/        # Workflow type definitions
-│   ├── scripts/          # Runner, verifier, guard check, memory writer
-│   ├── memory/
-│   │   ├── templates/    # Daily, decision, failure, lesson templates
-│   │   ├── project/      # Project status
-│   │   └── lessons/      # Cross-task learnings
-│   └── workspace/         # Sandbox for executor writes
-├── docs/                 # Architecture, security, workflow guides
-├── examples/             # Example runs (read-only, no real logs)
-├── tests/                # Public smoke test
-├── README.md             # This file
-├── LICENSE               # MIT
-├── CONTRIBUTING.md
-├── SECURITY.md
-└── ROADMAP.md
-```
+| Agent | Responsibility |
+|---|---|
+| **Router** | Classifies incoming goal into workflow type |
+| **Scout** | Read-only inspection of workspace and memory |
+| **Analyst** | Plans approach and sub-steps |
+| **Hermes Reviewer** | Fallback reasoning for complex tasks |
+| **Guard** | Mandatory safety gate — blocks before Executor runs |
+| **Executor** | Runs actions via shell, Python, or Claude Code |
+| **Verifier** | Checks executor output matches the original intent |
+| **Memory Manager** | Reads/writes structured memory templates |
 
 ## Safety Model
 
-The system enforces a **Guard before Executor** policy:
+- **Guard before Executor**: Every execution passes through Guard first
+- **Workspace-only writes**: Executor can only write to `multi_agent/workspace/`
+- **No secret logging**: API keys, tokens, and credentials are never written to memory or logs
+- **Deny list**: Commands like `sudo`, `rm -rf /`, recursive chmod/chown on system paths are blocked by default
 
-- Guard evaluates all execution requests against a deny-list
-- Forbidden: `sudo`, `rm -rf /`, `chmod -R`, `chown -R`, system paths (`/etc`, `/usr`, `/var`, `/opt`)
-- Executor writes are **workspace-only** (`.multi-agent/workspace/`)
-- No credentials, tokens, keys, or secrets are ever logged
-- All memory writes go to structured templates, not raw logs
+See [docs/security.md](docs/security.md) for the full threat model.
 
-## Why This Matters
+## Environment Setup
 
-Most agent demos show a single LLM call. This skeleton shows how multiple agents with different responsibilities can collaborate — with a safety gate that actually stops destructive operations, and a verifier that checks whether the executor actually did what was asked.
+This project requires **no external services** to run the skeleton. The smoke test and dry-runs work out of the box.
 
-This is a **workflow skeleton**, not a deployed product. It is useful for studying agent role separation, testing safety boundaries, and running local automation with review steps.
+For real agent runtime calls (OpenClaw, Hermes, Claude Code), you need to set up your own backend:
+
+```bash
+# Required environment variables (copy templates and fill in your values)
+cp templates/env.example .env
+
+# Edit .env with your actual API keys and paths
+nano .env
+```
+
+See `templates/.multi-agent/config.yaml.example` for the full config template with field documentation.
+
+## What Cannot Be Committed
+
+The following are automatically excluded via `.gitignore`. If you see them in a commit, something is wrong:
+
+- `multi_agent/logs/` — runtime message logs
+- `multi_agent/memory/daily/` — session day logs
+- `multi_agent/memory/failures/` — failure records
+- `multi_agent/memory/decisions/` — decision logs
+- `multi_agent/workspace/` — executor output files
+- `.env` — contains real API keys and tokens
+- `~/.openclaw/`, `~/.ssh/`, `~/.aws/`, `~/.claude/` — private runtime dirs
+- `*.pyc`, `__pycache__/`, `*.pyo`
+- Any file containing real tokens, API keys, or secrets
+
+## Smoke Test
+
+```bash
+bash tests/smoke_public.sh
+```
+
+The smoke test checks:
+1. All required files exist
+2. All bash scripts have valid syntax
+3. All Python scripts compile without error
+4. Forbidden directories (logs, memory, workspace) are not tracked by git
+5. `.gitignore` covers all critical items
+6. README makes no inflated claims
+7. Integration docs clearly mark planned items as planned
+
+## Backend Adapters
+
+The skeleton ships with four backend adapters in `multi_agent/adapters/`:
+
+| Adapter | Backend | Status |
+|---|---|---|
+| `shell_adapter.md` | Direct `bash` / `python3` | Always available |
+| `openclaw_adapter.md` | OpenClaw agent dispatch | Requires OpenClaw runtime |
+| `hermes_adapter.md` | Hermes advisory review | Requires Hermes CLI |
+| `claude_code_adapter.md` | Claude Code session | Requires Claude Code |
+
+Each adapter documents how to configure the backend and what the call/response format looks like.
 
 ## Model Integration Roadmap
 
-## Model Integration Roadmap
+Planned integration targets for a long-context reasoning model (e.g. MiMo-V2.5-Pro):
 
-The adapter layer in this skeleton is designed to make backend upgrades straightforward. The natural next step is replacing the rule-based Router, heuristic Guard, and diff-based Verifier with a more capable reasoning model.
-
-**MiMo-V2.5-Pro** is a strong candidate given its long-context reasoning capability for planning and review tasks. Planned integration targets:
-
-- **Analyst** — multi-step plans with long task history context
-- **Verifier** — semantic output verification beyond diff and exit codes
+- **Analyst** — multi-step planning with long task history
+- **Verifier** — semantic output verification beyond diff/exit-code
 - **Hermes-style review** — contextual risk reasoning instead of pattern deny-lists
-- **Memory** — summarization of accumulated session records
+- **Memory summarization** — condensing accumulated session records
 
-See [docs/model-integration-roadmap.md](docs/model-integration-roadmap.md) for the full roadmap.
-
-## Roadmap
-
-### Near-term
-- Polish public documentation and examples
-- Expand smoke tests for all workflow types
-- Add more local verifier checks
-
-### Mid-term
-- Integrate OpenClaw runtime agent calls (real subprocess routing)
-- Improve Claude Code backend adapter
-- Improve Hermes non-interactive reviewer mode
-- Add richer memory retrieval (semantic vs keyword)
-
-### Long-term
-- **MiMo-V2.5-Pro based Analyst** — long-context planner
-- **MiMo-V2.5-Pro based Verifier** — semantic output verification
-- **MiMo-V2.5-Pro based Hermes Reviewer** — contextual risk reasoning
-- Multi-model routing based on task complexity
-- Task graph execution with dependency tracking
-- Optional web dashboard for workflow monitoring
+See [docs/model-integration-roadmap.md](docs/model-integration-roadmap.md) for the full plan. MiMo-V2.5-Pro integration is **planned**, not currently implemented.
 
 ## License
 

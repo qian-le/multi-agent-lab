@@ -22,7 +22,7 @@ Guard evaluates every execution request against a deny-list. The following are a
 | Recursive chmod/chown | `chmod -R 777 /` |
 | System directories | `/etc`, `/usr`, `/var`, `/opt`, `/root` |
 | Credential access | Commands that read `~/.ssh/`, `~/.aws/`, `~/.netrc` |
-| Attempt to escape workspace | Any write outside `.multi-agent/workspace/` |
+| Attempt to escape workspace | Any write outside `multi_agent/workspace/` |
 
 Guard returns `DENIED` for these cases. The executor never runs.
 
@@ -31,7 +31,7 @@ Guard returns `DENIED` for these cases. The executor never runs.
 The executor may only write to:
 
 ```
-.multi-agent/workspace/
+multi_agent/workspace/
 ```
 
 Write operations that target paths outside this boundary are blocked by the shell adapter **before** Guard is even consulted. This is enforced as a path check in the adapter layer.
@@ -81,7 +81,7 @@ cd /path/to/multi-agent-lab
 bash tests/smoke_public.sh
 
 # 3. Run a workflow with a sandboxed goal
-bash .multi-agent/scripts/run_workflow.sh \
+bash multi_agent/scripts/run_workflow.sh \
   --type info \
   --goal "list all markdown files in this project"
 
@@ -89,8 +89,8 @@ bash .multi-agent/scripts/run_workflow.sh \
 git status --short
 
 # 5. If logs/ or memory/daily/ appeared, clean them up
-rm -rf .multi-agent/logs .multi-agent/memory/daily/*
-git checkout -- .multi-agent/logs .multi-agent/memory/daily
+rm -rf multi_agent/logs multi_agent/memory/daily/*
+git checkout -- multi_agent/logs multi_agent/memory/daily
 ```
 
 ## Safe Contributor Checklist

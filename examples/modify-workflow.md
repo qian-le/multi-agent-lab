@@ -17,7 +17,7 @@ This example demonstrates a `modify` workflow that safely creates a file inside 
 ### 2. Scout.inspect()
 
 **Actions:**
-- Confirms `.multi-agent/workspace/` directory exists and is writable
+- Confirms `multi_agent/workspace/` directory exists and is writable
 - No existing `demo.txt` (first creation)
 
 **Findings:**
@@ -36,7 +36,7 @@ workspace/
 steps:
   - id: "1"
     kind: "action"
-    task: "Write 'hello agent' to .multi-agent/workspace/demo.txt"
+    task: "Write 'hello agent' to multi_agent/workspace/demo.txt"
 ```
 
 ### 4. Guard.evaluate()
@@ -45,7 +45,7 @@ steps:
 ```json
 {
   "action": "write_file",
-  "path": ".multi-agent/workspace/demo.txt",
+  "path": "multi_agent/workspace/demo.txt",
   "content": "hello agent"
 }
 ```
@@ -60,12 +60,12 @@ steps:
 
 **Command executed:**
 ```bash
-echo "hello agent" > .multi-agent/workspace/demo.txt
+echo "hello agent" > multi_agent/workspace/demo.txt
 ```
 
 **Output:**
 ```
-File created: .multi-agent/workspace/demo.txt
+File created: multi_agent/workspace/demo.txt
 Bytes written: 12
 ```
 
@@ -75,12 +75,12 @@ Bytes written: 12
 ```json
 {
   "goal": "Create demo.txt with content 'hello agent'",
-  "executor_output": "File created: .multi-agent/workspace/demo.txt\nBytes written: 12"
+  "executor_output": "File created: multi_agent/workspace/demo.txt\nBytes written: 12"
 }
 ```
 
 **Actions:**
-- Reads `.multi-agent/workspace/demo.txt`
+- Reads `multi_agent/workspace/demo.txt`
 - Compares content to expected value
 
 **Output:** `VERIFIED`
@@ -96,14 +96,14 @@ Bytes written: 12
 
 After running:
 ```bash
-bash .multi-agent/scripts/run_workflow.sh \
+bash multi_agent/scripts/run_workflow.sh \
   --type modify \
   --goal "Create demo.txt in workspace with content hello agent"
 ```
 
 **Workspace result:**
 ```bash
-$ cat .multi-agent/workspace/demo.txt
+$ cat multi_agent/workspace/demo.txt
 hello agent
 ```
 
@@ -112,7 +112,7 @@ hello agent
 # Guard Decision — 2026-04-29
 
 ## Action
-write_file: .multi-agent/workspace/demo.txt
+write_file: multi_agent/workspace/demo.txt
 
 ## Decision
 APPROVED
@@ -125,7 +125,7 @@ Inside workspace boundary. Plain text content. No credential access.
 
 ## Safety Notes
 
-- The write is constrained to `.multi-agent/workspace/`
+- The write is constrained to `multi_agent/workspace/`
 - Guard would block any write to `~/.ssh/`, `/etc/`, or system paths
 - The file content is verified by Verifier after creation
 - No secrets or tokens were involved

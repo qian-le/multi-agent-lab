@@ -1,0 +1,44 @@
+project:
+  name: openclaw-multi-agent-os
+  root: "."
+  workspace: "multi_agent/workspace"
+  openclaw_config: ".openclaw"
+
+tools:
+  openclaw:
+    command: "openclaw"
+    required: false
+  hermes:
+    command: "hermes"
+    required: false
+  claude_code:
+    command: "claude"
+    required: false
+
+policy:
+  allow_file_write: true
+  allow_delete: false
+  allow_system_path_modify: false
+  require_guard_before_execute: true
+  require_verifier_after_execute: true
+  require_memory_after_task: true
+
+workflows:
+  info: "multi_agent/workflows/info.yaml"
+  analysis: "multi_agent/workflows/analysis.yaml"
+  modify: "multi_agent/workflows/modify.yaml"
+  debug: "multi_agent/workflows/debug.yaml"
+  architecture: "multi_agent/workflows/architecture.yaml"
+  risky: "multi_agent/workflows/risky.yaml"
+
+memory:
+  daily: "multi_agent/memory/daily"
+  project: "multi_agent/memory/project"
+  decisions: "multi_agent/memory/decisions"
+  failures: "multi_agent/memory/failures"
+  lessons: "multi_agent/memory/lessons"
+
+logs:
+  runs: "multi_agent/logs/runs"
+  messages: "multi_agent/logs/messages"
+

@@ -1,0 +1,94 @@
+# =============================================================================
+# Multi Agent Lab — Configuration Template
+# =============================================================================
+# Copy this file to multi_agent/config.yaml and fill in your values.
+# NEVER commit a config.yaml with real API keys, tokens, or secrets.
+# =============================================================================
+
+project:
+  # Human-readable project name
+  name: "my-multi-agent-lab"
+  # Root of the project (where this config lives)
+  root: "."
+  # Where executor is allowed to write files (relative to root)
+  workspace: "multi_agent/workspace"
+  # Path to your local openclaw config (typically ~/.openclaw or custom)
+  openclaw_config: "~/.openclaw"
+
+# =============================================================================
+# Backend Tool Detection
+# =============================================================================
+# Set required: false for optional backends.
+# The system works with just shell (bash/python3) — others are optional.
+# =============================================================================
+
+tools:
+  openclaw:
+    # Command to invoke openclaw CLI. Must be in PATH or use absolute path.
+    command: "openclaw"
+    required: false
+  hermes:
+    # Command to invoke hermes CLI.
+    command: "hermes"
+    required: false
+  claude_code:
+    # Command to invoke Claude Code CLI.
+    command: "claude"
+    required: false
+
+# =============================================================================
+# Safety Policy
+# =============================================================================
+
+policy:
+  # Allow file writes (controlled by workspace boundary)
+  allow_file_write: true
+  # Allow file deletion (not recommended to enable)
+  allow_delete: false
+  # Allow modification of system paths (/etc, /usr, /var, /opt)
+  allow_system_path_modify: false
+  # Guard MUST approve every execution before Executor runs
+  require_guard_before_execute: true
+  # Verifier MUST check output after Executor completes
+  require_verifier_after_execute: true
+  # Memory Manager writes a record after every task
+  require_memory_after_task: true
+
+# =============================================================================
+# Workflow Definitions
+# =============================================================================
+# Each workflow type maps to a YAML file that defines the agent pipeline.
+# Paths are relative to the project root.
+# =============================================================================
+
+workflows:
+  info:       "multi_agent/workflows/info.yaml"
+  analysis:   "multi_agent/workflows/analysis.yaml"
+  modify:     "multi_agent/workflows/modify.yaml"
+  debug:      "multi_agent/workflows/debug.yaml"
+  architecture: "multi_agent/workflows/architecture.yaml"
+  risky:      "multi_agent/workflows/risky.yaml"
+
+# =============================================================================
+# Memory Layout
+# =============================================================================
+# These paths define where memory records are stored.
+# They are created automatically if they don't exist.
+# =============================================================================
+
+memory:
+  daily:     "multi_agent/memory/daily"
+  project:   "multi_agent/memory/project"
+  decisions: "multi_agent/memory/decisions"
+  failures:  "multi_agent/memory/failures"
+  lessons:   "multi_agent/memory/lessons"
+
+# =============================================================================
+# Log Storage
+# =============================================================================
+# Runtime logs are stored here. These directories MUST NOT be committed.
+# =============================================================================
+
+logs:
+  runs:     "multi_agent/logs/runs"
+  messages: "multi_agent/logs/messages"

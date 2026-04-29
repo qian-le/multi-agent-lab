@@ -17,8 +17,8 @@ This example demonstrates a read-only `info` workflow. No files are created or m
 ### 2. Scout.inspect()
 
 **Actions:**
-- Reads `.multi-agent/agents/` directory contents
-- Reads `.multi-agent/memory/project/status.md` for recent context
+- Reads `multi_agent/agents/` directory contents
+- Reads `multi_agent/memory/project/status.md` for recent context
 - No filesystem modification
 
 **Findings:**
