@@ -1,5 +1,7 @@
 # Multi Agent Lab
 
+[![Public Smoke Test](https://github.com/qian-le/multi-agent-lab/actions/workflows/public-smoke.yml/badge.svg)](https://github.com/qian-le/multi-agent-lab/actions/workflows/public-smoke.yml)
+
 A local multi-agent workflow skeleton built around OpenClaw, Hermes, and Claude Code.
 
 ## Project Scope
@@ -22,6 +24,24 @@ It is designed as a local development and experimentation environment, not a hos
 
 ## System Architecture
 
+```mermaid
+flowchart TD
+    U[User Goal] --> M[Main Coordinator]
+    M --> R[Router<br/>classify task type]
+    R --> S[Scout<br/>read-only inspection]
+    S --> A[Analyst<br/>planning]
+    A --> H[Hermes Reviewer<br/>complex tasks only]
+    H --> G[Guard<br/>safety gate]
+    A --> G
+    G -->|allow| E[Executor<br/>shell / python / claude_code]
+    G -->|deny| STOP[Pipeline Stopped]
+    E --> V[Verifier<br/>check result]
+    V -->|pass| MEM[Memory Manager<br/>record to templates]
+    V -->|fail| FAIL[Reported as Failure]
+```
+
+Text overview:
+
 ```
 User Goal
   └─> Main Coordinator
@@ -30,7 +50,7 @@ User Goal
             ├─> Analyst (plan)
             ├─> Hermes Reviewer (complex tasks)
             ├─> Guard (safety gate)
-            ├─> Executor (run)
+            ├─> Executor (run) [only if Guard approves]
             ├─> Verifier (check result)
             └─> Memory Manager (record)
 ```
@@ -80,10 +100,11 @@ multi-agent-lab/
 │   └── workspace/         # Sandbox for executor writes
 ├── docs/                 # Architecture, security, workflow guides
 ├── examples/             # Example runs (read-only, no real logs)
-├── tests/               # Public smoke test
-├── README.md            # This file
-├── LICENSE              # MIT
+├── tests/                # Public smoke test
+├── README.md             # This file
+├── LICENSE               # MIT
 ├── CONTRIBUTING.md
+├── SECURITY.md
 └── ROADMAP.md
 ```
 
@@ -105,15 +126,17 @@ This is a **workflow skeleton**, not a deployed product. It is useful for studyi
 
 ## MiMo Orbit Relevance
 
-MiMo-V2.5's long-context reasoning is relevant to this skeleton in several planned areas:
+This project is designed to integrate **MiMo-V2.5-Pro** as the long-context reasoning engine for several key agent roles. The planned integration targets are:
 
-- **Analyst planning** — multi-step plans with tool call reasoning
-- **Hermes review** — fallback review for ambiguous or high-stakes tasks
-- **Verifier reasoning** — checking whether execution output satisfies the original goal
-- **Memory summarization** — condensing long session history into reusable lessons
+- **Analyst planning** — multi-step plans with tool call reasoning over long task histories
+- **Hermes review** — fallback reasoning review for ambiguous or high-stakes tasks
+- **Verifier reasoning** — semantic output verification beyond diff and exit-code checks
+- **Memory summarization** — condensing accumulated session records into reusable lessons
 - **Workflow optimization** — learning from past Guard decisions to route more efficiently
 
-The skeleton currently uses rule-based routing and heuristic Guard checks. MiMo-V2.5 integration is a future enhancement target, not a current implementation.
+**Current state:** The skeleton uses rule-based routing and heuristic Guard checks. MiMo-V2.5-Pro integration is a **planned development target**, not a current implementation. The adapter layer is designed to accommodate this integration when the API is available.
+
+See [docs/mimo-orbit.md](docs/mimo-orbit.md) for the full integration plan.
 
 ## Roadmap
 
@@ -129,10 +152,11 @@ The skeleton currently uses rule-based routing and heuristic Guard checks. MiMo-
 - Add richer memory retrieval (semantic vs keyword)
 
 ### Long-term
-- MiMo-V2.5 based long-context planner for Analyst
+- **MiMo-V2.5-Pro based Analyst** — long-context planner
+- **MiMo-V2.5-Pro based Verifier** — semantic output verification
+- **MiMo-V2.5-Pro based Hermes Reviewer** — contextual risk reasoning
 - Multi-model routing based on task complexity
 - Task graph execution with dependency tracking
-- Self-evaluation loop for verifier
 - Optional web dashboard for workflow monitoring
 
 ## License
