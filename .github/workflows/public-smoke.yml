@@ -1,0 +1,17 @@
+name: Public Smoke Test
+
+on:
+  push:
+    branches: [main, public-main, enhance-public-showcase]
+  pull_request:
+    branches: [main, public-main, enhance-public-showcase]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run public smoke test
+        run: bash tests/smoke_public.sh
