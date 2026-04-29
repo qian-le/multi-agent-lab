@@ -1,0 +1,31 @@
+# secrets
+.env
+.env.*
+*.key
+*.pem
+*.token
+credentials*
+secrets*
+
+# private local dirs
+.ssh/
+.aws/
+.azure/
+.claude/
+.codex/
+.openclaw/
+.config/
+
+# runtime generated files
+.multi-agent/logs/
+.multi-agent/memory/daily/
+.multi-agent/memory/failures/
+.multi-agent/memory/decisions/
+.multi-agent/workspace/*.txt
+
+# cache
+.cache/
+node_modules/
+__pycache__/
+*.log
+.DS_Store
