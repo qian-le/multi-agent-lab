@@ -1,0 +1,18 @@
+name: risky
+description: High-risk workflow that must stop for explicit user confirmation.
+stages:
+  - main
+  - router
+  - scout
+  - analyst
+  - hermes_reviewer
+  - guard
+  - ask_user
+  - memory
+execution:
+  writes_project_files: false
+  requires_guard: true
+  requires_verifier: false
+  requires_hermes: true
+  requires_user_confirm: true
+

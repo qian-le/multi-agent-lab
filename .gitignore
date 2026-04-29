@@ -1,31 +1,81 @@
-# secrets
+# =============================================================================
+# Multi Agent Lab — .gitignore
+# =============================================================================
+# These paths MUST NOT be committed — they contain runtime data, secrets,
+# or machine-specific paths. If you see any of these in a commit, remove them.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Runtime Logs & Memory (most critical)
+# -----------------------------------------------------------------------------
+**/logs/
+**/memory/daily/
+**/memory/failures/
+**/memory/decisions/
+**/workspace/
+**/*.log
+
+# -----------------------------------------------------------------------------
+# Environment & Secrets
+# -----------------------------------------------------------------------------
 .env
-.env.*
-*.key
+.env.local
+.env.*.local
 *.pem
-*.token
-credentials*
-secrets*
+*.key
+*.crt
+credentials/
+secrets/
 
-# private local dirs
-.ssh/
-.aws/
-.azure/
-.claude/
-.codex/
-.openclaw/
-.config/
+# -----------------------------------------------------------------------------
+# Private Runtime Directories
+# -----------------------------------------------------------------------------
+# These are home-directory configs and should never be copied into a repo
+**/.openclaw/
+**/.ssh/
+**/.aws/
+**/.claude/
+**/.codex/
+**/.config/
+**/.hermes/
 
-# runtime generated files
-.multi-agent/logs/
-.multi-agent/memory/daily/
-.multi-agent/memory/failures/
-.multi-agent/memory/decisions/
-.multi-agent/workspace/*.txt
-
-# cache
-.cache/
-node_modules/
+# -----------------------------------------------------------------------------
+# Python
+# -----------------------------------------------------------------------------
 __pycache__/
-*.log
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# -----------------------------------------------------------------------------
+# OS
+# -----------------------------------------------------------------------------
 .DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# -----------------------------------------------------------------------------
+# Editor
+# -----------------------------------------------------------------------------
+.vscode/
+.idea/
+*.sublime-*
+
+# -----------------------------------------------------------------------------
+# Test / CI artifacts
+# -----------------------------------------------------------------------------
+coverage/
+htmlcov/
+.pytest_cache/
+
+# -----------------------------------------------------------------------------
+# Node (if any)
+# -----------------------------------------------------------------------------
+node_modules/
+package-lock.json
+yarn.lock

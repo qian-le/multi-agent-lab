@@ -1,0 +1,15 @@
+name: analysis
+description: Read-only investigation and planning workflow.
+stages:
+  - main
+  - router
+  - scout
+  - analyst
+  - guard
+  - memory
+execution:
+  writes_project_files: false
+  requires_guard: true
+  requires_verifier: false
+  requires_hermes: false
+

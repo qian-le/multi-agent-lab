@@ -1,0 +1,13 @@
+name: info
+description: Read-only information workflow.
+stages:
+  - main
+  - router
+  - scout
+  - memory
+execution:
+  writes_project_files: false
+  requires_guard: false
+  requires_verifier: false
+  requires_hermes: false
+
